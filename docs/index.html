@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>mod0Umleitung - DNS Masquerading for Windows</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>mod0Umleitung</h1>
+        <p>DNS Masquerading Server for Windows</p>
+
+        <p class="view"><a href="https://github.com/modzero/mod0Umleitung">View the Project on GitHub <small>modzero/mod0Umleitung</small></a></p>
+
+        <ul>
+          <li><a href="https://modzero.github.io/mod0Umleitung/releases/setup_mod0Umleitung_gui.msi">Download <strong>Installer</strong></a></li>
+          <li><a href="https://github.com/modzero/mod0Umleitung/zipball/master">Download <strong>Source.zip</strong></a></li>
+          <li><a href="https://github.com/modzero/mod0Umleitung">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      
+      <section>
+        
+      <p><img src="images/uml-logo.png" alt="logo" /></p>
+
+        <p><u>Eine Deutsche Version befindet sich weiter unten - German version below</u></p>
+
+        <h2 id="english-version">English Version</h2>
+
+        <h3 id="what">What &amp; Why?</h3>
+
+        <p>
+          
+          <p>
+            <i>mod0Umleitung</i> provides a DNS server for local networks. mod0Umleitung is a forwarding DNS server for A and AAAA records. Different record types will follow in future releases. Its main purpose is the masquerading of external DNS hostnames. The DNS subsystem of <a href="http://www.thekelleys.org.uk/dnsmasq/doc.html">dnsmasq</a> allows the modification of hostname to IP-address mappings via /etc/host on BSD and Linux systems. <i>mod0Umleitung</i> provides a graphical user-interface to set up DNS masquerading rules on windows systems. Caching of DNS requests and responses is currently not supported.
+          </p>
+          
+          <p>
+            <img src="images/screenshot-loaded-running.png">
+          </p>
+            
+          <p>
+            <i>mod0Umleitung</i> allows the modification of DNS masquerading rules during runtime via CTRL-N shortcut or click on &quot;Add Rule&quot;. Active masquerading rules can be saved to file for later use (STRG-S or &quot;Save Ruleset&quot;). mod0Umleitung uses a XML  database that can be edited using your favorite text-editor (e. g. for use with the command line tool).
+          </p>
+          
+          <p>
+            <img src="images/screenshot-add-rule.png">
+          </p>
+          
+          <p>
+            XML databases are stored in <pre>%AppData%\modzero\umleitung_server</pre> by default. The format of the XML is pretty straightforward:
+          </p>
+          
+         <div class="highlighter-rouge"><pre class="highlight"><code>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;DNSMasqConfig xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+  &lt;DNSMasqEntries&gt;
+    &lt;DNSMasqHost name=&quot;www.contoso.gack&quot; a=&quot;127.0.0.1&quot; aaaa=&quot;::1&quot; /&gt;
+    &lt;DNSMasqHost name=&quot;contoso.gack&quot; a=&quot;127.0.0.2&quot; /&gt;
+    &lt;DNSMasqHost name=&quot;test.mod0.de&quot; a=&quot;10.42.1.23&quot; /&gt;
+  &lt;/DNSMasqEntries&gt;
+&lt;/DNSMasqConfig&gt;
+         </code></pre></div>
+            
+          <p>
+            <i>mod0Umleitung</i> can be used for doing security analyses of various network-clients and embedded systems that communicate with the Internet. The idea of <i>mod0Umleitung</i>, the DNS masquerading server for Windows, grew during setting up a Windows based MITM-setup and rogue Access-Point for mobile and IoT security-assessments.
+          </p>
+          
+          <p>
+          The tool is open-sourced on <a href="https://modzero.github.io/mod0Umleitung/">https://modzero.github.io/mod0Umleitung/</a> and respectively <a href="https://github.com/modzero/mod0Umleitung">https://github.com/modzero/mod0Umleitung</a>. 
+          </p>
+          
+        </p>
+
+        <h3 id="authors-and-contributors">Authors and Contributors</h3>
+
+        <p><i>mod0Umleitung</i> has been initiated by Thorsten Schr&amp;ouml;der (<a href="https://github.com/devio">on github</a>) of modzero in 2017.
+
+        <h3 id="license">License</h3>
+
+        <p><i>mod0Umleitung</i> is free and open source software. The software is published under the <a href="https://opensource.org/licenses/BSD-3-Clause">BSD 3-Clause License</a>, which has been extended by our <i>Non-Military Usage clause</i>.</p>
+
+        <h3 id="download">Download</h3>
+
+        <p>A signed installer can be downloaded from Github at <a href="https://modzero.github.io/mod0Umleitung/releases/setup_mod0Umleitung_gui.msi">https://modzero.github.io/mod0Umleitung/releases/setup_mod0Umleitung_gui.msi</a>. The installer and executable programs have been signed with the following certificate:</p>
+
+        <div class="highlighter-rouge"><pre class="highlight"><code>Issued to: modzero GmbH
+        Issued by: DigiCert EV Code Signing CA (SHA2)
+        Expires:   Thu Oct 10 13:00:00 2019
+        SHA1 hash: 9CA607786293B016FC148FC0F09C23CD89BEB2BD</code></pre></div>
+
+        <h3 id="support-or-contact">Support or Contact</h3>
+
+        <p>If you have trouble with using or deploying the software, please use the github platform and create issues or requests. To contact modzero, feel free to drop us an email at info ((at))  modzero [dot] ch or visit our website at <a href="http://www.modzero.ch">http://www.modzero.ch</a>.
+        </p>
+
+        <hr />
+
+        <h2 id="deutsche-version">Deutsche Version</h2>
+
+        <h3 id="was">Was &amp;amp; Warum?</h3>
+        
+        <p>
+          
+          <p>
+            <i>mod0Umleitung</i> stellt einen DNS Server f&uuml;r lokale Netzwerke bereit. <i>mod0Umleitung</i> ist ein sog. Forwarding DNS Server f&uuml;r A und AAAA DNS-Records. Weitere Record-Types werden in zuk&uuml;nftigen Releases unterst&uuml;tzt. Der Hauptzweck der Anwendung ist das Maskieren von DNS Anfragen und Ergebnissen externer DNS Hostnamen. Das DNS Subsystem von <a href="http://www.thekelleys.org.uk/dnsmasq/doc.html">dnsmasq</a> erlaubt die Modifikation von bestehenden Hostname zu IP-Adress-Zuordnungen, indem die Datei /etc/hosts auf BSD und anderen UNIX-Systemen entsprechend erweitert wird. <i>mod0Umleitung</i> hingegen verf&uuml;gt &uuml;ber eine grafische Benutzeroberfl&auml;che um die Regeln f&uuml;r das DNS-Masquerading auf Windows Systemen zu konfigurieren. Das Caching von DNS-Requests wird derzeit nicht unterst&uuml;zt.
+          </p>
+          
+          <p>
+            <img src="images/screenshot-loaded-running.png">
+          </p>
+            
+          <p>
+            <i>mod0Umleitung</i> erlaubt die Manipulation der DNS Masquerading Regeln zur Laufzeit via STRG-N Shortcut, oder einem Klick auf &quot;Add Rule&quot;. Aktive Regeln k&ouml;nnen f&uuml;r eine sp&auml;tere Verwendung gespeichert werden (STRG-S oder &quot;Save Ruleset&quot;). <i>mod0Umleitung</i> verwendet eine XML-Datenbank f&uuml;r die Regeln und Konfiguration, die mit einem Text-Editor der Wahl editiert werden kann - beispielsweise f&uuml;r die Verwendung mit dem Kommandozeilen-basierten tool.
+          </p>
+          
+          <p>
+            <img src="images/screenshot-add-rule.png">
+          </p>
+          
+          <p>
+            Die XML Datenbanken werden standardm&auml;&szlig;ig im Verzeichnis <pre>%AppData%\modzero\umleitung_server</pre> gespeichert. 
+            Das XML-Format ist leicht verst&auml;ndlich und selbsterkl&auml;rend:
+          </p>
+          
+         <div class="highlighter-rouge"><pre class="highlight"><code>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;DNSMasqConfig xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+  &lt;DNSMasqEntries&gt;
+    &lt;DNSMasqHost name=&quot;www.contoso.gack&quot; a=&quot;127.0.0.1&quot; aaaa=&quot;::1&quot; /&gt;
+    &lt;DNSMasqHost name=&quot;contoso.gack&quot; a=&quot;127.0.0.2&quot; /&gt;
+    &lt;DNSMasqHost name=&quot;test.mod0.de&quot; a=&quot;10.42.1.23&quot; /&gt;
+  &lt;/DNSMasqEntries&gt;
+&lt;/DNSMasqConfig&gt;
+         </code></pre></div>
+            
+          <p>
+            <i>mod0Umleitung</i> kann f&uuml;r die Durchf&uuml;hrung von Sicherheits-Analysen verschiedener Netzwerk-Clients und Embedded-Systems genutzt werden, die mit dem Internet kommunizieren. Die initiale Idee hinter <i>mod0Umleitung</i>, dem DNS Masquerading Server f&uuml;r Windows, wuchs w&auml;rend der Zusammenstellung eines Windows-basierten MITM- und Rogue Wifi Accesspoint Setups f&uuml;r Sicherheits-Tests mobiler Anwendungen und IoT-Ger&auml;ten.
+          </p>
+          
+          <p>
+            Das Werkzeug wurde quelloffen auf <a href="https://modzero.github.io/mod0Umleitung/">https://modzero.github.io/mod0Umleitung/</a> und respektive <a href="https://github.com/modzero/mod0Umleitung">https://github.com/modzero/mod0Umleitung</a> ver&ouml;ffentlicht. 
+          </p>
+          
+        </p>
+
+        <h3 id="autoren-und-quellen">Autoren und Quellen</h3>
+
+        <p><i>mod0Umleitung</i> wurde 2017 von Thorsten Schr&amp;ouml;der (<a href="https://github.com/devio">github</a>) von modzero ins Leben gerufen.</p>
+
+        <h3 id="lizenz">Lizenz</h3>
+
+        <p><i>mod0Umleitung</i> ist freie Open Source Software. Die Software wurde unter der <a href="https://opensource.org/licenses/BSD-3-Clause">BSD 3-Clause License</a> ver&amp;ouml;ffentlicht, welche um eine <i>Non-Military-Use</i> Klausel erweitert wurde.</p>
+
+        <h3 id="download-1">Download</h3>
+
+        <p>Ein signierter Installer kann von der Open Source Plattform Github herunter geladen werden: <a href="https://modzero.github.io/mod0Umleitung/releases/setup_mod0Umleitung_gui.msi">https://modzero.github.io/mod0Umleitung/releases/setup_mod0Umleitung_gui.msi</a>. Der Installer und die ausf&amp;uuml;hrbaren Programme wurden mit folgendem Zertifikat signiert:</p>
+
+        <div class="highlighter-rouge"><pre class="highlight"><code>Issued to: modzero GmbH
+        Issued by: DigiCert EV Code Signing CA (SHA2)
+        Expires:   Thu Oct 10 13:00:00 2019
+        SHA1 hash: 9CA607786293B016FC148FC0F09C23CD89BEB2BD</code></pre></div>
+
+        <h3 id="support-und-kontakt">Support und Kontakt</h3>
+
+        <p>F&amp;uuml;r Support-Anfragen und Problemen bei der Handhabung der Software benutzen Sie bitte die Github-Plattform um entsprechende Issues und Requests anzulegen. Um modzero zu kontaktieren, schicken Sie einfach eine Email an info ((at)) modzero [dot] ch oder besuchen Sie die Webseite <a href="http://www.modzero.ch">http://www.modzero.ch</a>.</p>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/modzero">modzero</a></p>
+        <p><img src="images/modzero-logo.png" width="150"></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
