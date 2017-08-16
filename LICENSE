@@ -1,6 +1,7 @@
 BSD 3-Clause License
 
-Copyright (c) 2017, modzero
+Copyright (c) 2017, modzero GmbH
+Author: Thorsten Schroeder
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -17,6 +18,14 @@ modification, are permitted provided that the following conditions are met:
   contributors may be used to endorse or promote products derived from
   this software without specific prior written permission.
 
+* NON-MILITARY-USAGE CLAUSE
+  Redistribution and use in source and binary form for military use and
+  military research is not permitted. Infringement of these clauses may
+  result in publishing the source code of the utilizing applications and
+  libraries to the public. As this software is developed, tested and
+  reviewed by *international* volunteers, this clause shall not be refused
+  due to the matter of *national* security concerns.
+ 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
