@@ -243,6 +243,12 @@ namespace modzero.Umleitung.Server
 
             m_server = new DnsServer(IPAddress.Any, 10, 10);
 
+            m_log.WriteLine(2, "[d] Default DNS Upstream Server:");
+
+            DnsClient.GetLocalConfiguredDnsServers().ForEach(srv => {
+                m_log.WriteLine(2, "[d]    - " + srv.ToString());
+            });
+
             m_server.QueryReceived += OnQueryReceived;
             m_server.Start();
             this.IsRunning = true;
@@ -280,52 +286,53 @@ namespace modzero.Umleitung.Server
             {
                 m_log.WriteLine("[+] Processing " + query.Questions[0].RecordType + " query for " + queryhost);
 
+                Boolean match = false;
+                IPAddress ip4 = null;
+                IPAddress ip6 = null;
+
+                // handle masqueraded entries first
+                m_masq_config.DNSMasqEntries.ForEach(h =>
+                {
+                    if (queryhost.ToString().StartsWith(h.name))
+                    {
+                        match = true;
+                        response.ReturnCode = ReturnCode.NoError;
+
+                        if (query.Questions[0].RecordType == RecordType.A)
+                        {
+                            ip4 = IPAddress.Parse(h.a);
+                            ARecord new_a = new ARecord(query.Questions[0].Name, 666, ip4);
+                            response.AnswerRecords.Add(new_a);
+                        }
+                        else if (query.Questions[0].RecordType == RecordType.Aaaa)
+                        {
+                            ip6 = IPAddress.Parse(h.aaaa);
+                            AaaaRecord new_aaaa = new AaaaRecord(query.Questions[0].Name, 666, ip6);
+                            response.AnswerRecords.Add(new_aaaa);
+                        }
+                    }
+                });
+
+                if(match)
+                    return response;
+
                 // send query to upstream server
                 DnsQuestion question = query.Questions[0];
-                DnsMessage upstreamResponse = await DnsClient.Default.ResolveAsync(question.Name, question.RecordType, question.RecordClass);
 
-                if (upstreamResponse == null)
-                    return null;
+                DnsMessage upstreamResponse = await DnsClient.Default.ResolveAsync(
+                    question.Name, question.RecordType, question.RecordClass);
+
+                // TODO: Implement settings form to define own list of upstream DNS servers.
+                //DnsClient dnsc = new DnsClient(IPAddress.Parse("10.1.1.2"), 10000);
+                //DnsMessage upstreamResponse = await dnsc.ResolveAsync(
+                //    question.Name, question.RecordType, question.RecordClass);
 
                 // if we got an answer, copy it to the message sent to the client
-                if (upstreamResponse.AnswerRecords.Count > 0)
+                if (upstreamResponse != null && upstreamResponse.AnswerRecords.Count > 0)
                 {
                     foreach (DnsRecordBase record in (upstreamResponse.AnswerRecords))
                     {
-                        Boolean match = false;
-                        IPAddress ip4 = null;
-                        IPAddress ip6 = null;
-                        DomainName domainname = DomainName.Parse(record.Name.ToString());
-
-                        m_masq_config.DNSMasqEntries.ForEach(h =>
-                        {
-                            if (domainname.ToString().StartsWith(h.name))
-                            {
-                                match = true;
-
-                                if (record.RecordType == RecordType.A)
-                                {
-                                    ip4 = IPAddress.Parse(h.a);
-                                    ARecord new_a = new ARecord(record.Name, record.TimeToLive, ip4);
-                                    response.AnswerRecords.Add(new_a);
-                                }
-                                else if (record.RecordType == RecordType.Aaaa)
-                                {
-                                    ip6 = IPAddress.Parse(h.aaaa);
-                                    AaaaRecord new_aaaa = new AaaaRecord(record.Name, record.TimeToLive, ip6);
-                                    response.AnswerRecords.Add(new_aaaa);
-                                }
-                                else
-                                {
-                                    response.AnswerRecords.Add(record);
-                                }
-                            }
-                        });
-
-                        if (match == false)
-                        {
-                            response.AnswerRecords.Add(record);
-                        }
+                        response.AnswerRecords.Add(record);
                     }
 
                     foreach (DnsRecordBase record in (upstreamResponse.AdditionalRecords))
@@ -336,29 +343,11 @@ namespace modzero.Umleitung.Server
                 else
                 {
                     // no dns record for queried host
-                    IPAddress ip4 = null;
-                    IPAddress ip6 = null;
-
-                    m_masq_config.DNSMasqEntries.ForEach(h =>
+                    if (upstreamResponse == null)
                     {
-                        if (queryhost.ToString().StartsWith(h.name))
-                        {
-                            if (query.Questions[0].RecordType == RecordType.A)
-                            {
-                                ip4 = IPAddress.Parse(h.a);
-                                ARecord new_a = new ARecord(query.Questions[0].Name, 666, ip4);
-                                response.AnswerRecords.Add(new_a);
-                            }
-                            else if (query.Questions[0].RecordType == RecordType.Aaaa)
-                            {
-                                ip6 = IPAddress.Parse(h.aaaa);
-                                AaaaRecord new_aaaa = new AaaaRecord(query.Questions[0].Name, 666, ip6);
-                                response.AnswerRecords.Add(new_aaaa);
-                            }
-                        }
-                    });
-                } // anserrecord count == 0
-
+                        m_log.WriteLine(2, "upstreamResponse == null (timeout?)");
+                    }
+                } 
                 response.ReturnCode = ReturnCode.NoError;
             }
             return response;

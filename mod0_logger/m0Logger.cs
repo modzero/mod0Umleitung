@@ -154,7 +154,7 @@ namespace modzero.Logger
 
 
         public void WriteLine(String s) {
-            if ((m_debuglevel <= 0) || (m0LogDestination.LOG_NONE == m_logdest))
+            if ((m_debuglevel < 0) || (m0LogDestination.LOG_NONE == m_logdest))
                 return;
 
             if (m_logdest == m0LogDestination.LOG_CONSOLE)
@@ -181,6 +181,14 @@ namespace modzero.Logger
                     throw;
                 }
             }
+        }
+
+        public void WriteLine(int level, String s)
+        {
+            if ((m_debuglevel < level) || (m0LogDestination.LOG_NONE == m_logdest))
+                return;
+
+            this.WriteLine(s);
         }
 
         private void append_log(String msg)

@@ -68,6 +68,7 @@ namespace modzero.Umleitung
         private UmleitungServer m_server;
         private ToolStripStatusLabel m_status_label;
         private Boolean m_server_running;
+        private int m_debuglevel;
 
 
         public UmleitungManagerForm()
@@ -77,9 +78,10 @@ namespace modzero.Umleitung
             create_main_menu();
 
             statusText.Text = "Init";
+            m_debuglevel = Properties.Settings.Default.umlDebug;
 
             m_log = new m0Logger(m0Logger.m0LogDestination.LOG_TEXTBOX, textLog);
-            m_log.SetDebuglevel(1);
+            m_log.SetDebuglevel(m_debuglevel);
 
             m_server = new UmleitungServer();
             m_server.EnableLogging(m_log);
@@ -93,7 +95,6 @@ namespace modzero.Umleitung
 
             set_status_modified(false);
             m_server_running = false;
-
         }
 
         private void addRule_Click(object sender, EventArgs e)
@@ -114,6 +115,8 @@ namespace modzero.Umleitung
 
         private void startButton_Click(object sender, EventArgs e)
         {
+            m_log.WriteLine(2, "[d] startbutton clicked.");
+
             if (m_server_running)
                 return;
 
@@ -122,6 +125,8 @@ namespace modzero.Umleitung
 
         private void stopButton_Click(object sender, EventArgs e)
         {
+            m_log.WriteLine(2, "[d] stopbutton clicked.");
+
             if (!m_server_running)
                 return;
 
@@ -191,6 +196,7 @@ namespace modzero.Umleitung
             menuItem2.Text = "Help";
 
             MenuItem subMenuItemFile1 = new MenuItem("&Exit", new System.EventHandler(this.OnExit_Click));
+            
             MenuItem subMenuItemFile2 = new MenuItem("&Add Rule", new System.EventHandler(this.addRule_Click));
             subMenuItemFile2.Shortcut = Shortcut.CtrlN;
             MenuItem subMenuItemFile3 = new MenuItem("&Load Rules", new System.EventHandler(this.loadRules_Click));
@@ -198,13 +204,15 @@ namespace modzero.Umleitung
             MenuItem subMenuItemFile4 = new MenuItem("&Save Rules", new System.EventHandler(this.saveRules_Click));
             subMenuItemFile4.Shortcut = Shortcut.CtrlS;
 
+            MenuItem subMenuItemFile5 = new MenuItem("&Debug", new System.EventHandler(this.OnDebug_Click));
+
             MenuItem subMenuItemHelp1 = new MenuItem("&About", new System.EventHandler(this.OnAbout_Click));
             MenuItem subMenuItemHelp2 = new MenuItem("&Manual", new System.EventHandler(this.OnManual_Click));
-
 
             menuItem1.MenuItems.Add(subMenuItemFile2);
             menuItem1.MenuItems.Add(subMenuItemFile3);
             menuItem1.MenuItems.Add(subMenuItemFile4);
+            menuItem1.MenuItems.Add(subMenuItemFile5);
             menuItem1.MenuItems.Add(subMenuItemFile1);
 
             menuItem2.MenuItems.Add(subMenuItemHelp1);
@@ -218,9 +226,47 @@ namespace modzero.Umleitung
             Menu = mainMenu1;
         }
 
+        private void OnDebug_Click(Object sender, System.EventArgs e)
+        {
+            String text;
+            String title;
+            Boolean verbose = false;
+            
+
+            if (m_debuglevel > 1)
+            {
+                text = "Debugging is currently enabled.\n" +
+                       "Do you want to disable verbose logging?";
+                title = "Disable verbose logging?";
+                verbose = false;
+            }
+            else
+            {
+                text = "Debugging is currently disabled.\n" +
+                       "Do you want to enable verbose logging?";
+                title = "Enable verbose logging?";
+                verbose = true;
+            }
+
+            var result = MessageBox.Show(text, title, MessageBoxButtons.OKCancel);
+
+            if (result == DialogResult.OK && verbose == true)
+                m_debuglevel = 2;
+            else if (result == DialogResult.OK && verbose == false)
+                m_debuglevel = 1;
+            else
+                return;
+
+            m_log.WriteLine("[d] verbose = " + verbose + " level: " + m_debuglevel);
+
+            Properties.Settings.Default.umlDebug = m_debuglevel;
+            Properties.Settings.Default.Save();
+
+            this.m_log.SetDebuglevel(m_debuglevel);
+        }
+
         private void OnExit_Click(Object sender, System.EventArgs e)
         {
-            // Code goes here that handles the Click event.
             Application.Exit();
         }
 
