@@ -70,7 +70,15 @@
   &lt;/DNSMasqEntries&gt;
 &lt;/DNSMasqConfig&gt;
          </code></pre></div>
-            
+          
+          <p>
+            <i>mod0Umleitung</i> Allows the usage of system's upstream DNS servers or a set of custom DNS upstream servers. To configure custom DNS servers to which every DNS request is forwared, you can open the preferences dialog via File->Preferences. Changing DNS settings in <i>mod0Umleitung</i> does not affect the system DNS configuration. To enable verbose debug output, check the &quot;Enable verbose output&quot; checkbox.
+          </p>
+          
+          <p>
+            <img src="images/screenshot-preferences-dialog.png">
+          </p>
+          
           <p>
             <i>mod0Umleitung</i> can be used for doing security analyses of various network-clients and embedded systems that communicate with the Internet. The idea of <i>mod0Umleitung</i>, the DNS masquerading server for Windows, grew during setting up a Windows based MITM-setup and rogue Access-Point for mobile and IoT security-assessments.
           </p>
@@ -81,6 +89,18 @@
           
         </p>
 
+        <h3 id="Troubleshooting">Troubleshooting</h3>
+          
+          <p>
+          Running a DNS Server on Windows clients might be tricky and fail sometimes. Before contacting us, please make sure there is no firewall blocking incoming or outgoing DNS packets on the network. Firewall rules may be configured via Windows Firewall configuration tool or your antivirus program that is shipped with a personal firewall. Also, policies may prevent DNS traffic from reaching your machine.
+         </p>
+         
+         <p>
+            To verify if the server is able to handle requests, you could open a command line prompt by running cmd.exe via WIN-R and query the server manually via localhost: 
+            <pre>nslookup www.modzero.ch 127.0.0.1</pre>
+         </p>
+         
+         
         <h3 id="authors-and-contributors">Authors and Contributors</h3>
 
         <p><i>mod0Umleitung</i> has been initiated by Thorsten Schr&ouml;der (<a href="https://github.com/devio">on github</a>) of modzero in 2017.
@@ -142,7 +162,15 @@
   &lt;/DNSMasqEntries&gt;
 &lt;/DNSMasqConfig&gt;
          </code></pre></div>
-            
+          
+          <p>
+            <i>mod0Umleitung</i> erlaubt die Benutzung der systemweit konfigurierten upstream DNS Server, oder auch ein selbst definiertes Set an DNS Servern. Um eigene, vom System abweichende DNS Server zu aktivieren, kann die Konfiguration &uuml;ber das Men&uuml; File->Preferences angepasst werden. Die hier get&auml;tigten Einstellungen haben keinen Einfluss auf die systemweite Konfiguration. &Uuml;ber den Preferences-Dialog k&ouml;nnen auch Debug-Ausgaben eingestellt werden - hierf&uuml;r muss der Haken an der &quot;Enable verbose output&quot; Checkbox gesetzt werden.
+          </p>
+          
+          <p>
+            <img src="images/screenshot-preferences-dialog.png">
+          </p>
+          
           <p>
             <i>mod0Umleitung</i> kann f&uuml;r die Durchf&uuml;hrung von Sicherheits-Analysen verschiedener Netzwerk-Clients und Embedded-Systems genutzt werden, die mit dem Internet kommunizieren. Die initiale Idee hinter <i>mod0Umleitung</i>, dem DNS Masquerading Server f&uuml;r Windows, wuchs w&auml;rend der Zusammenstellung eines Windows-basierten MITM- und Rogue Wifi Accesspoint Setups f&uuml;r Sicherheits-Tests mobiler Anwendungen und IoT-Ger&auml;te.
           </p>
@@ -153,6 +181,18 @@
           
         </p>
 
+        <h3 id="Troubleshooting">Troubleshooting</h3>
+          
+          <p>
+          Einen DNS Server auf einem Windows Client zu betreiben kann hin und wieder zu Problemen f&uuml;hren. Bevor Sie uns mit Problemen bei der Benuztung der Software kontaktieren, stellen Sie bitte sicher, dass keine Personal Firewall die DNS-Pakete daran hindert empfangen oder verschickt zu werden. Solche Firewall-Regeln k&ouml;nnen beispielsweise &uuml;ber die Windows-Firewall Konfiguration editiert werden, oder &uuml;ber die Personal Firewall Ihrer Antivirus-Software. Auch Windows Richtlinien k&ouml;nnen daf&uuml;r verantwortlich sein, dass mancher Traffic nicht weitergereicht wird.
+         </p>
+         
+         <p>
+            Um grunds&auml;tzlich sicher zu gehen, ob der Server in der Lage ist DNS Anfragen aufzul&ouml;sen bzw. weiterzuleiten, k&ouml;nnen sie einen manuellen DNS Request &uuml;ber die Windows Command Line absetzen. Hierf&uuml;r &ouml;ffnen Sie &uuml;ber Win-R cmd.exe eine Kommandozeile und &uuml;berpr&uuml;fen, ob der manuelle Request vom Server verarbeitet wird:
+            
+            <pre>nslookup www.modzero.ch 127.0.0.1</pre>
+         </p>
+         
         <h3 id="autoren-und-quellen">Autoren und Quellen</h3>
 
         <p><i>mod0Umleitung</i> wurde 2017 von Thorsten Schr&ouml;der (<a href="https://github.com/devio">github</a>) von modzero ins Leben gerufen.</p>
