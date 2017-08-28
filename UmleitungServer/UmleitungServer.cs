@@ -47,7 +47,6 @@
  * ------------------------------------------------------------------------------
 */
 
-
 using ARSoft.Tools.Net;
 using ARSoft.Tools.Net.Dns;
 using modzero.Logger;
@@ -62,6 +61,13 @@ using System.Xml.Serialization;
 
 namespace modzero.Umleitung.Server
 {
+    public class UmleitungProperties
+    {
+        public int DebugLevel;
+        public Boolean UseCustomDns;
+        public List<IPAddress> CustomDnsServers;
+    }
+
     public class UmleitungServer
     {
         public uint DebugLevel;
@@ -70,8 +76,14 @@ namespace modzero.Umleitung.Server
         private m0Logger m_log;
         private DnsServer m_server;
         public String config_dir;
-
+        private UmleitungProperties m_props;
+        
         public bool IsRunning { get; private set; }
+
+        public void SetPreferences(UmleitungProperties up)
+        {
+            m_props = up;
+        }
 
         private void init_umleitung_server()
         {
@@ -96,29 +108,46 @@ namespace modzero.Umleitung.Server
 
         public UmleitungServer()
         {
+            m_props = new UmleitungProperties();
+            m_props.DebugLevel = 1;
+            m_props.UseCustomDns = false;
+            m_props.CustomDnsServers = new List<IPAddress>();
+
             m_masq_config = new DNSMasqConfig();
             m_masq_config.DNSMasqEntries = new List<DNSMasqHost>();
             m_listen_ip = IPAddress.Any;
             init_umleitung_server();
         }
 
-        public UmleitungServer(IPAddress listen)
+        public UmleitungServer(UmleitungProperties up)
         {
+            m_props = up;
+            m_masq_config = new DNSMasqConfig();
+            m_masq_config.DNSMasqEntries = new List<DNSMasqHost>();
+            m_listen_ip = IPAddress.Any;
+            init_umleitung_server();
+        }
+
+        public UmleitungServer(UmleitungProperties up, IPAddress listen)
+        {
+            m_props = up;
             m_masq_config = new DNSMasqConfig();
             m_masq_config.DNSMasqEntries = new List<DNSMasqHost>();
             m_listen_ip = listen;
             init_umleitung_server();
         }
 
-        public UmleitungServer(String path)
+        public UmleitungServer(UmleitungProperties up, String path)
         {
+            m_props = up;
             m_listen_ip = IPAddress.Any;
             ReadMasqConfig(path);
             init_umleitung_server();
         }
 
-        public UmleitungServer(String path, IPAddress listen)
+        public UmleitungServer(UmleitungProperties up, String path, IPAddress listen)
         {
+            m_props = up;
             ReadMasqConfig(path);
             m_listen_ip = listen;
             init_umleitung_server();
@@ -243,15 +272,24 @@ namespace modzero.Umleitung.Server
 
             m_server = new DnsServer(IPAddress.Any, 10, 10);
 
-            m_log.WriteLine(2, "[d] Default DNS Upstream Server:");
-
-            DnsClient.GetLocalConfiguredDnsServers().ForEach(srv => {
-                m_log.WriteLine(2, "[d]    - " + srv.ToString());
-            });
+            //m_log.WriteLine(2, "[d] Default DNS Upstream Server:");
+            //DnsClient.GetLocalConfiguredDnsServers().ForEach(srv => {
+            //    m_log.WriteLine(2, "[d]    - " + srv.ToString());
+            //});
 
             m_server.QueryReceived += OnQueryReceived;
-            m_server.Start();
-            this.IsRunning = true;
+
+            try
+            {
+                m_server.Start();
+                this.IsRunning = true;
+            }
+            catch (Exception e)
+            {
+                m_log.WriteLine("[!] Failed to start server: " + e.Message);
+                this.IsRunning = false;
+                
+            }
         }
 
         public void Stop()
@@ -279,6 +317,7 @@ namespace modzero.Umleitung.Server
 
         private async Task<DnsMessage> umleitung_process_request(DnsMessage query)
         {
+            DnsMessage upstreamResponse;
             DnsMessage response = query.CreateResponseInstance();
             DomainName queryhost = DomainName.Parse(query.Questions[0].Name.ToString());
 
@@ -296,6 +335,9 @@ namespace modzero.Umleitung.Server
                     if (queryhost.ToString().StartsWith(h.name))
                     {
                         match = true;
+
+                        m_log.WriteLine(2, "[d] Using masquerading rules.");
+
                         response.ReturnCode = ReturnCode.NoError;
 
                         if (query.Questions[0].RecordType == RecordType.A)
@@ -319,13 +361,23 @@ namespace modzero.Umleitung.Server
                 // send query to upstream server
                 DnsQuestion question = query.Questions[0];
 
-                DnsMessage upstreamResponse = await DnsClient.Default.ResolveAsync(
-                    question.Name, question.RecordType, question.RecordClass);
-
-                // TODO: Implement settings form to define own list of upstream DNS servers.
-                //DnsClient dnsc = new DnsClient(IPAddress.Parse("10.1.1.2"), 10000);
-                //DnsMessage upstreamResponse = await dnsc.ResolveAsync(
-                //    question.Name, question.RecordType, question.RecordClass);
+                if (!m_props.UseCustomDns)
+                {
+                    m_log.WriteLine(2, "[d] Using system's DNS servers" );
+                    upstreamResponse = await DnsClient.Default.ResolveAsync(
+                        question.Name, question.RecordType, question.RecordClass);
+                }
+                else
+                {
+                    m_props.CustomDnsServers.ForEach(d =>
+                    {
+                        m_log.WriteLine(2, "[d] Using custom DNS servers: " + d.ToString());
+                    });
+                    
+                    DnsClient dnsc = new DnsClient(m_props.CustomDnsServers, 10000);
+                    upstreamResponse = await dnsc.ResolveAsync(
+                        question.Name, question.RecordType, question.RecordClass);
+                }
 
                 // if we got an answer, copy it to the message sent to the client
                 if (upstreamResponse != null && upstreamResponse.AnswerRecords.Count > 0)

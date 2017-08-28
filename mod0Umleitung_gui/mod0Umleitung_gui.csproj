@@ -22,8 +22,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -94,6 +94,12 @@
       <DependentUpon>mod0Umleitung.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="PromptPreferences.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PromptPreferences.Designer.cs">
+      <DependentUpon>PromptPreferences.cs</DependentUpon>
+    </Compile>
     <Compile Include="PromptRuleAdd.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -103,6 +109,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="mod0Umleitung.resx">
       <DependentUpon>mod0Umleitung.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PromptPreferences.resx">
+      <DependentUpon>PromptPreferences.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PromptRuleAdd.resx">
       <DependentUpon>PromptRuleAdd.cs</DependentUpon>

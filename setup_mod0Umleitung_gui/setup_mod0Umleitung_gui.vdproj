@@ -455,11 +455,6 @@
             "AssemblyAsmDisplayName" = "8:mod0_logger, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_8CA2D7F2E18C6C830A9B377496C544DB"
-                    {
-                    "Name" = "8:mod0_logger.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:mod0_logger.dll"
             "TargetName" = "8:"
@@ -486,11 +481,6 @@
             "AssemblyAsmDisplayName" = "8:UmleitungServer, Version=1.0.3.1, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_CF53A1AB396F8A4C0E85DCADD0D0CCD3"
-                    {
-                    "Name" = "8:UmleitungServer.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:UmleitungServer.dll"
             "TargetName" = "8:"
@@ -662,15 +652,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:mod0Umleitung"
-        "ProductCode" = "8:{9C74C831-6280-4350-96D2-D79C4645D587}"
-        "PackageCode" = "8:{9112C47B-9EEC-4D9D-B853-74E80429D399}"
+        "ProductCode" = "8:{B021A07B-C359-4690-97D0-382F737B3FE4}"
+        "PackageCode" = "8:{C3B270DB-9586-4EF2-A01F-36A6BF437607}"
         "UpgradeCode" = "8:{7C19C6F7-4FF2-4094-9193-9A1A529F6BA8}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.9"
+        "ProductVersion" = "8:1.1.0"
         "Manufacturer" = "8:modzero"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://modzero.github.io/mod0Umleitung/"

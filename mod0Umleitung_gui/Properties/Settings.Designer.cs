@@ -37,25 +37,13 @@ namespace modzero.Umleitung.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("8.8.8.8")]
         public string upstreamDNS1 {
             get {
                 return ((string)(this["upstreamDNS1"]));
             }
             set {
                 this["upstreamDNS1"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string upstreamDNS2 {
-            get {
-                return ((string)(this["upstreamDNS2"]));
-            }
-            set {
-                this["upstreamDNS2"] = value;
             }
         }
         
@@ -68,6 +56,30 @@ namespace modzero.Umleitung.Properties {
             }
             set {
                 this["useCustomUpstream"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("ANY")]
+        public string umlListenAddress {
+            get {
+                return ((string)(this["umlListenAddress"]));
+            }
+            set {
+                this["umlListenAddress"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string upstreamDNS2 {
+            get {
+                return ((string)(this["upstreamDNS2"]));
+            }
+            set {
+                this["upstreamDNS2"] = value;
             }
         }
     }

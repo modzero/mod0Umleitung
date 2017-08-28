@@ -47,15 +47,16 @@
  * ------------------------------------------------------------------------------
 */
 
-
 using modzero.Logger;
 using modzero.Umleitung.Server;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -68,25 +69,61 @@ namespace modzero.Umleitung
         private UmleitungServer m_server;
         private ToolStripStatusLabel m_status_label;
         private Boolean m_server_running;
-        private int m_debuglevel;
-
+        private UmleitungProperties m_props;
 
         public UmleitungManagerForm()
         {
             InitializeComponent();
 
-            create_main_menu();
-
-            statusText.Text = "Init";
-            m_debuglevel = Properties.Settings.Default.umlDebug;
+            m_props = new UmleitungProperties();
+            m_props.DebugLevel = Properties.Settings.Default.umlDebug;
+            m_props.UseCustomDns = Properties.Settings.Default.useCustomUpstream;
+            m_props.CustomDnsServers = new List<IPAddress>();
 
             m_log = new m0Logger(m0Logger.m0LogDestination.LOG_TEXTBOX, textLog);
-            m_log.SetDebuglevel(m_debuglevel);
+            m_log.SetDebuglevel(Properties.Settings.Default.umlDebug);
 
-            m_server = new UmleitungServer();
+            if (m_props.UseCustomDns)
+            {
+                try
+                {
+                    IPAddress ip = IPAddress.Parse(Properties.Settings.Default.upstreamDNS1);
+                    m_props.CustomDnsServers.Add(ip);
+                }
+                catch (Exception e)
+                {
+                    if (!(Properties.Settings.Default.upstreamDNS1 == ""))
+                        m_log.WriteLine(2, "[!] UmleitungManagerForm.ctor: failed to add upstreamDNS1: " + e.Message);
+                    Properties.Settings.Default.upstreamDNS1 = "";
+                    Properties.Settings.Default.Save();
+                }
+
+                try
+                {
+                    IPAddress ip = IPAddress.Parse(Properties.Settings.Default.upstreamDNS2);
+                    m_props.CustomDnsServers.Add(ip);
+                }
+                catch (Exception e)
+                {
+                    if (!(Properties.Settings.Default.upstreamDNS2 == ""))
+                        m_log.WriteLine(2, "[!] UmleitungManagerForm.ctor: failed to add upstreamDNS2: " + e.Message);
+                    Properties.Settings.Default.upstreamDNS2 = "";
+                    Properties.Settings.Default.Save();
+                }
+            }
+
+            m_log.WriteLine(2, "[d] UmleitungManagerForm.ctor: Debug Level     = " + Properties.Settings.Default.umlDebug);
+            m_log.WriteLine(2, "[d] UmleitungManagerForm.ctor: Use Custom DNS  = " + Properties.Settings.Default.useCustomUpstream);
+            m_log.WriteLine(2, "[d] UmleitungManagerForm.ctor: Primary DNS     = " + Properties.Settings.Default.upstreamDNS1);
+            m_log.WriteLine(2, "[d] UmleitungManagerForm.ctor: Alternate DNS   = " + Properties.Settings.Default.upstreamDNS2);
+
+            m_server = new UmleitungServer(m_props);
             m_server.EnableLogging(m_log);
+
             m_server.ReadMasqConfig();
             m_server.DumpRunningConfig();
+
+            create_main_menu();
 
             statusText.BackColor = Color.LightCoral;
             statusText.Text = "Stopped";
@@ -109,14 +146,11 @@ namespace modzero.Umleitung
             m_log.WriteLine("[+] Added new rule for " + newHost.name + ": a=" + newHost.a + " aaaa=" + newHost.aaaa);
 
             m_server.AddMasq(newHost);
-
             set_status_modified(true);
         }
 
         private void startButton_Click(object sender, EventArgs e)
         {
-            m_log.WriteLine(2, "[d] startbutton clicked.");
-
             if (m_server_running)
                 return;
 
@@ -125,8 +159,6 @@ namespace modzero.Umleitung
 
         private void stopButton_Click(object sender, EventArgs e)
         {
-            m_log.WriteLine(2, "[d] stopbutton clicked.");
-
             if (!m_server_running)
                 return;
 
@@ -136,17 +168,23 @@ namespace modzero.Umleitung
         private void stop_server()
         {
             m_server.Stop();
-            statusText.Text = "Stopped";
-            statusText.BackColor = Color.LightCoral;
-            m_server_running = false;
+            if (!m_server.IsRunning)
+            {
+                statusText.Text = "Stopped";
+                statusText.BackColor = Color.LightCoral;
+                m_server_running = false;
+            }
         }
 
         private void start_server()
         {
             m_server.Run();
-            statusText.Text = "Running";
-            statusText.BackColor = Color.LightGreen;
-            m_server_running = true;
+            if (m_server.IsRunning)
+            {
+                statusText.Text = "Running";
+                statusText.BackColor = Color.LightGreen;
+                m_server_running = true;
+            }
         }
 
         private void loadRules_Click(object sender, EventArgs e)
@@ -164,7 +202,6 @@ namespace modzero.Umleitung
                 m_server.ReadMasqConfig(path);
                 m_server.DumpRunningConfig();
             }
-
             set_status_modified(false);
         }
 
@@ -180,9 +217,7 @@ namespace modzero.Umleitung
                 m_log.WriteLine("[+] saving config-file: " + path);
                 m_server.SaveMasq(path);
             }
-
             set_status_modified(false);
-
         }
 
         public void create_main_menu()
@@ -204,7 +239,7 @@ namespace modzero.Umleitung
             MenuItem subMenuItemFile4 = new MenuItem("&Save Rules", new System.EventHandler(this.saveRules_Click));
             subMenuItemFile4.Shortcut = Shortcut.CtrlS;
 
-            MenuItem subMenuItemFile5 = new MenuItem("&Debug", new System.EventHandler(this.OnDebug_Click));
+            MenuItem subMenuItemFile5 = new MenuItem("&Preferences", new System.EventHandler(this.OnPreferences_Click));
 
             MenuItem subMenuItemHelp1 = new MenuItem("&About", new System.EventHandler(this.OnAbout_Click));
             MenuItem subMenuItemHelp2 = new MenuItem("&Manual", new System.EventHandler(this.OnManual_Click));
@@ -226,44 +261,64 @@ namespace modzero.Umleitung
             Menu = mainMenu1;
         }
 
-        private void OnDebug_Click(Object sender, System.EventArgs e)
+        private void OnPreferences_Click(object sender, EventArgs e)
         {
-            String text;
-            String title;
-            Boolean verbose = false;
-            
+            PromptPreferences prefs = new PromptPreferences();
 
-            if (m_debuglevel > 1)
+            m_log.WriteLine(2, "[d] Display preferences dialog");
+
+            prefs.ShowPrefsDialog();
+
+            m_props.DebugLevel = Properties.Settings.Default.umlDebug;
+            m_props.UseCustomDns = Properties.Settings.Default.useCustomUpstream;
+
+            if (m_props.UseCustomDns)
             {
-                text = "Debugging is currently enabled.\n" +
-                       "Do you want to disable verbose logging?";
-                title = "Disable verbose logging?";
-                verbose = false;
+                m_props.CustomDnsServers = new List<IPAddress>();
+
+                try
+                {
+                    IPAddress ip = IPAddress.Parse(Properties.Settings.Default.upstreamDNS1);
+                    m_props.CustomDnsServers.Add(ip);
+                    m_log.WriteLine(2, "[d] OnPreferences_Click: added upstreamDNS1: " + Properties.Settings.Default.upstreamDNS1);
+                }
+                catch (Exception ex)
+                {
+                    if (!(Properties.Settings.Default.upstreamDNS1 == ""))
+                        m_log.WriteLine(2, "[!] OnPreferences_Click: failed to add upstreamDNS1: " + ex.Message);
+                    Properties.Settings.Default.upstreamDNS1 = "";
+                    Properties.Settings.Default.Save();
+                }
+
+                try
+                {
+                    IPAddress ip = IPAddress.Parse(Properties.Settings.Default.upstreamDNS2);
+                    m_props.CustomDnsServers.Add(ip);
+                    m_log.WriteLine(2, "[d] OnPreferences_Click: added upstreamDNS2: " + Properties.Settings.Default.upstreamDNS2);
+                }
+                catch (Exception ex)
+                {
+                    if (!(Properties.Settings.Default.upstreamDNS2 == ""))
+                        m_log.WriteLine(2, "[!] OnPreferences_Click: failed to add upstreamDNS2: " + ex.Message + ": " + Properties.Settings.Default.upstreamDNS2);
+                    Properties.Settings.Default.upstreamDNS2 = "";
+                    Properties.Settings.Default.Save();
+                }
             }
             else
             {
-                text = "Debugging is currently disabled.\n" +
-                       "Do you want to enable verbose logging?";
-                title = "Enable verbose logging?";
-                verbose = true;
+                m_props.CustomDnsServers = new List<IPAddress>();
             }
 
-            var result = MessageBox.Show(text, title, MessageBoxButtons.OKCancel);
+            m_log.WriteLine(2, "[D] updated preferences:");
+            m_log.WriteLine(2, "[-] DebugLevel:         " + m_props.DebugLevel);
+            m_log.WriteLine(2, "[-] UseCustomDns:       " + m_props.UseCustomDns);
+            m_log.WriteLine(2, "[-] CustomDnsServers 0: " + (m_props.CustomDnsServers.Count > 0 ? m_props.CustomDnsServers[0].ToString() : ""));
+            m_log.WriteLine(2, "[-] CustomDnsServers 1: " + (m_props.CustomDnsServers.Count > 1 ? m_props.CustomDnsServers[1].ToString() : ""));
 
-            if (result == DialogResult.OK && verbose == true)
-                m_debuglevel = 2;
-            else if (result == DialogResult.OK && verbose == false)
-                m_debuglevel = 1;
-            else
-                return;
-
-            m_log.WriteLine("[d] verbose = " + verbose + " level: " + m_debuglevel);
-
-            Properties.Settings.Default.umlDebug = m_debuglevel;
-            Properties.Settings.Default.Save();
-
-            this.m_log.SetDebuglevel(m_debuglevel);
+            m_log.SetDebuglevel(m_props.DebugLevel);
+            m_server.SetPreferences(m_props);
         }
+
 
         private void OnExit_Click(Object sender, System.EventArgs e)
         {
@@ -272,7 +327,6 @@ namespace modzero.Umleitung
 
         private void OnAbout_Click(Object sender, System.EventArgs e)
         {
-
             string about_text = "modzero Umleitung - DNS Masquerading for Windows\n\n"
                                 + "   Version: " + Application.ProductVersion + "\n"
                                 + "   Author: Thorsten Schroeder\n"
@@ -296,7 +350,6 @@ namespace modzero.Umleitung
             System.Diagnostics.Process.Start("https://modzero.github.io/mod0Umleitung/");
         }
 
-
         private void set_status_modified(Boolean s)
         {
             if (this.m_status_label != null)
@@ -315,6 +368,5 @@ namespace modzero.Umleitung
                 }
             }
         }
-
     }
 }
