@@ -71,7 +71,7 @@ namespace modzero.Umleitung
         private Boolean m_server_running;
         private UmleitungProperties m_props;
 
-        public UmleitungManagerForm()
+        public UmleitungManagerForm(Boolean autostart)
         {
             InitializeComponent();
 
@@ -132,6 +132,9 @@ namespace modzero.Umleitung
 
             set_status_modified(false);
             m_server_running = false;
+
+            if(autostart)
+                this.start_server();
         }
 
         private void addRule_Click(object sender, EventArgs e)
@@ -330,13 +333,13 @@ namespace modzero.Umleitung
             string about_text = "modzero Umleitung - DNS Masquerading for Windows\n\n"
                                 + "   Version: " + Application.ProductVersion + "\n"
                                 + "   Author: Thorsten Schroeder\n"
-                                + "   Copyright 2017, modzero GmbH\n\n"
+                                + "   Copyright 2018, modzero GmbH\n\n"
                                 + "Contact: \n"
                                 + "   modzero GmbH\n"
-                                + "   Friedrichstr. 95\n"
+                                + "   Marienstr. 12\n"
                                 + "   10117 Berlin\n"
                                 + "   Germany\n"
-                                + "   Web: http://www.modzero.de/\n"
+                                + "   Web: https://www.modzero.ch/\n"
                                 + "   Mail: contact@modzero.ch\n\n"
                                 + "This program is free software. It comes without any warranty.\n"
                                 + "Use at your own risk!";

@@ -61,11 +61,21 @@ namespace modzero.Umleitung
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            Boolean autostart = false;
+
+            Console.WriteLine("[d] started with {0} parameters", args.Length);
+
+            if (args.Length == 1) {
+                if (args[0].Equals("-start"))
+                    autostart = true;
+                Console.WriteLine("[d] started with parameter -start (({0}))", args[0]);
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new UmleitungManagerForm());
+            Application.Run(new UmleitungManagerForm(autostart));
         }
     }
 }

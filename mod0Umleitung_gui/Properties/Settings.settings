@@ -6,7 +6,7 @@
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="upstreamDNS1" Type="System.String" Scope="User">
-      <Value Profile="(Default)">8.8.8.8</Value>
+      <Value Profile="(Default)">1.1.1.1</Value>
     </Setting>
     <Setting Name="useCustomUpstream" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
